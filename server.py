@@ -21,5 +21,33 @@ CORS(app)
 # 4. Add the new event to the events list
 # 5. Return the new event with status code 201
 
+
+events = [
+    {"id": 1, "title": "Yoga in the Park"},
+    {"id": 2, "title": "Lake 5K Run"}
+]
+
+@app.route("/", methods=["GET"])
+def welcome():
+    return jsonify({"message": "Welcome!"}), 200
+
+@app.route("/events", methods=["GET"])
+def get_events():
+    return jsonify(events), 200
+
+@app.route("/events", methods=["POST"])
+def add_event():
+    data = request.get_json()
+
+    if not data or not data.get("title"):
+        return jsonify({"error": "Title is required"}), 400
+
+    new_id = max((e["id"] for e in events), default=0) + 1
+    new_event = {"id": new_id, "title": data["title"]}
+
+    events.append(new_event)
+
+    return jsonify(new_event), 201
+
 if __name__ == "__main__":
     app.run(debug=True)
